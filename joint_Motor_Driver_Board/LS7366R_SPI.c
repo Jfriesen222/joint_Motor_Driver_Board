@@ -45,8 +45,8 @@ unsigned int config3 = SPI_ENABLE & // Enable module
         ;
 
 void config_spi_slow() {
-    CloseSPI1();
-    OpenSPI1(config1slow, config2, config3);
+    CloseSPI2();
+    OpenSPI2(config1slow, config2, config3);
 }
 
 void setQuadX4() {
@@ -132,16 +132,16 @@ void readCountMode(tripSPIdata *count_mode){
 
 void read_SPI(int command, tripSPIdata *datas) {
     int bufVal;
-    bufVal = SPI1BUF; // dummy read of the SPI1BUF register to clear the SPIRBF flag
-    SPI1BUF = command; // write the data out to the SPI peripheral
-    while ((!SPI1STATbits.SPIRBF) ); // wait for the data to be sent out
-    datas->data1 = SPI1BUF;
+    bufVal = SPI2BUF; // dummy read of the SPI1BUF register to clear the SPIRBF flag
+    SPI2BUF = command; // write the data out to the SPI peripheral
+    while ((!SPI2STATbits.SPIRBF) ); // wait for the data to be sent out
+    datas->data1 = SPI2BUF;
 }
 
 void write_SPI(int command) {
     int bufVal;
-    bufVal = SPI1BUF; // dummy read of the SPI1BUF register to clear the SPIRBF flag
-    SPI1BUF = command; // write the data out to the SPI peripheral
-    while ((!SPI1STATbits.SPIRBF)  ); // wait for the data to be sent out
-    bufVal = SPI1BUF; // dummy read of the SPI1BUF register to clear the SPIRBF flag
+    bufVal = SPI2BUF; // dummy read of the SPI1BUF register to clear the SPIRBF flag
+    SPI2BUF = command; // write the data out to the SPI peripheral
+    while ((!SPI2STATbits.SPIRBF)  ); // wait for the data to be sent out
+    bufVal = SPI2BUF; // dummy read of the SPI1BUF register to clear the SPIRBF flag
 }

@@ -117,14 +117,6 @@ void ClockInit(void) {
 
 void PinInit(void) {
 
-//    U1PWRC = 0; // USB OTG module disabled
-//    U1OTGCON = 0; // VBUS line off
-//    U1PWMCON = 0; // Counter is disabled
-//    U1CNFG2 = 0; // On-chip Boost Controller off
-//    
-//
-//    PMCON = 0;
-//    PMAEN = 0;
     I2C1CON1 = 0;
     I2C1CON2 = 0;
 
@@ -142,37 +134,33 @@ void PinInit(void) {
 
     
 //    /* initialize CS pins as outputs */
-//    TRIS_CS1_1 = TRIS_CS2_1 = TRIS_CS3_1 = TRIS_CS4_1 = TRIS_CS5_1 = TRIS_CS6_1 = 0;
-//    ODC_CS1_1 = ODC_CS2_1 = ODC_CS3_1 = ODC_CS4_1 = ODC_CS5_1 = ODC_CS6_1 = 1;
-//    CS1_1 = CS2_1 = CS3_1 = CS4_1 = CS5_1 = CS6_1 = 1;
-//
+    TRIS_CS1 = TRIS_CS2 = TRIS_CS3 = TRIS_CS4 = TRIS_CS5 = TRIS_CS6 = TRIS_CS7 = 0;
+    ODC_CS1 = ODC_CS2 = ODC_CS3 = ODC_CS4 = ODC_CS5 = ODC_CS6 = ODC_CS7 = 0;
+    CS1 = CS2 = CS3 = CS4 = CS5 = CS6 = CS7 = 1;
+
 //    /* initialize switch pins as inputs */
-//    TRIS_SW1 = 1;
-//    TRIS_SW2 = 1;
-//    TRIS_SW3 = 1;
-//    TRIS_SW4 = 1;
-//    CNPU_SW1 = 1;
-//    CNPU_SW2 = 1;
-//    CNPU_SW3 = 1;
-//    CNPU_SW4 = 1;
-//
+    TRIS_SW1 = 1;
+    TRIS_SW2 = 1;
+    TRIS_SW3 = 1;
+    TRIS_SW4 = 1;
+    CNPU_SW1 = 1;
+    CNPU_SW2 = 1;
+    CNPU_SW3 = 1;
+    CNPU_SW4 = 1;
+
     TRIS_RESET_1 = 0;
     RESET_1 = 0                                                      ;
 
     //    //Set up Change Notify Interrupt
-    //    //These correspond to your change hall effect pins.
     //    CNENCbits.CNIEC13 = 1; // Enable RC14 pin for interrupt detection
 
 //    //CNPUFbits.CNPUF4 = 1;
 //    ODCFbits.ODCF4 = 0;
 //    ODCFbits.ODCF5 = 0;
 //    //CNPUCbits.CNPUC13 = 1;
-//
 //    IEC1bits.CNIE = 1; // Enable CN interrupts
 //    IFS1bits.CNIF = 0; // Reset CN interrupt
-//
-//
-//    //Unlock PPS Registers
+    
 //    TRISDbits.TRISD6 = 0;
 //    TRISDbits.TRISD1 = 0;
 //    TRISDbits.TRISD13 = 1; //sdi
@@ -184,35 +172,11 @@ void PinInit(void) {
 //    TRISDbits.TRISD5 = 1;
 //    ODCDbits.ODCD5 = 0;
 //    CNPUDbits.CNPUD5 = 0;
-//
-//    //__builtin_write_OSCCONL(OSCCON & ~(1 << 6));
-//    //OUT_PIN_PPS_RP67 = OUT_FN_PPS_U2TX; //U2Tx
-//    //IN_FN_PPS_U2RX = IN_PIN_PPS_RP69; //U2Rx
-//
-//    PPSOut(_SDO1, _RP70); // Connect UART1 TX output to RP67 pin
-//    PPSOut(_SCK1, _RP65); // Connect Comparator 1 output to RP118 pin
-//    PPSIn(_SDI1, _RPI77); // Connect UART2 RX input to RPI62 pin
-//    PPSOut(_SDO3, _RP99); // Connect UART1 TX output to RP67 pin
-//    PPSOut(_SCK3, _RP100); // Connect Comparator 1 output to RP118 pin
-//    PPSIn(_SDI3, _RP101); // Connect UART2 RX input to RPI62 pin
-    //    PPSIn(_INT2, _RPI75); // Connect External Interrupt 2 input to RPI75 pin
-    //
-    //    _RP70R = 0; // Default Pin output
-    //    _RP65R = 0; // Default Pin output
-    //    OUT_PIN_PPS_RP70 = OUT_FN_PPS_SDO1;
-    //    OUT_PIN_PPS_RP65 = OUT_FN_PPS_SCK1;
-    //    IN_FN_PPS_SDI1 = IN_PIN_PPS_RPI77;
-    //
-    //
-    //    _RP99R = 0; // Default Pin output
-    //    _RP100R = 0; // Default Pin output
-    //    OUT_PIN_PPS_RP99 = OUT_FN_PPS_SDO3;
-    //    OUT_PIN_PPS_RP100 = OUT_FN_PPS_SCK3;
-    //    IN_FN_PPS_SDI3 = IN_PIN_PPS_RP101;
 
-
-    //Lock PPS Registers
-    // __builtin_write_OSCCONL(OSCCON | (1 << 6));
+//
+    PPSOut(_SDO2, _RP54); // Connect UART1 TX output to RP67 pin
+    PPSOut(_SCK2, _RP41); // Connect Comparator 1 output to RP118 pin
+    PPSIn(_SDI2, _RP56); // Connect UART2 RX input to RPI62 pin
 
 }
 
@@ -307,31 +271,19 @@ void __attribute__((__interrupt__, no_auto_psv)) _T1Interrupt(void) {
     IFS0bits.T1IF = 0; // Clear Timer1 Interrupt Flag
 }
 
-void selectCS(uint16_t cs_bits1, uint16_t cs_bits2) {
-//    CS1_1 = (0b0000000000000001)&(cs_bits1);
-//    CS2_1 = ((0b0000000000000010)&(cs_bits1)) >> 1;
-//    CS3_1 = ((0b0000000000000100)&(cs_bits1)) >> 2;
-//    CS4_1 = ((0b0000000000001000)&(cs_bits1)) >> 3;
-//    CS5_1 = ((0b0000000000010000)&(cs_bits1)) >> 4;
-//    CS6_1 = ((0b0000000000100000)&(cs_bits1)) >> 5;
-//    CS1_2 = ((0b0000000001000000)&(cs_bits1)) >> 6;
-//    CS2_2 = ((0b0000000010000000)&(cs_bits1)) >> 7;
-//    CS3_2 = ((0b0000000100000000)&(cs_bits1)) >> 8;
-//    CS4_2 = ((0b0000001000000000)&(cs_bits1)) >> 9;
-//    CS5_2 = ((0b0000010000000000)&(cs_bits1)) >> 10;
-//    CS6_2 = ((0b0000100000000000)&(cs_bits1)) >> 11;
-//    CS1_3 = ((0b0001000000000000)&(cs_bits1)) >> 12;
-//    CS2_3 = ((0b0010000000000000)&(cs_bits1)) >> 13;
-//    CS3_3 = ((0b0100000000000000)&(cs_bits1)) >> 14;
-//    CS4_3 = ((0b1000000000000000)&(cs_bits1)) >> 15;
-//    CS5_3 = ((0b0000000000000001)&(cs_bits2));
-//    CS6_3 = ((0b0000000000000010)&(cs_bits2)) >> 1;
+void selectCS(uint16_t cs_bits) {
+    CS1 = (0b0000000000000001)&(cs_bits);
+    CS2 = ((0b0000000000000010)&(cs_bits)) >> 1;
+    CS3 = ((0b0000000000000100)&(cs_bits)) >> 2;
+    CS4 = ((0b0000000000001000)&(cs_bits)) >> 3;
+    CS5 = ((0b0000000000010000)&(cs_bits)) >> 4;
+    CS6 = ((0b0000000000100000)&(cs_bits)) >> 5;
+    CS7 = ((0b0000000001000000)&(cs_bits)) >> 6;
 }
 
 void readSwitches(Robot_Switches *robot_switches) {
 //    robot_switches->SF[0] = S_SF1;
 //    robot_switches->SF[1] = S_SF2;
-//
 //    robot_switches->SA[0] = S_SA1;
 //    robot_switches->SA[1] = S_SA2;
 }
