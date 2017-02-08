@@ -83,8 +83,8 @@ ifneq ($(INFORMATION_MESSAGE), )
 endif
 	${MAKE}  -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/joint_Motor_Driver_Board.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 
-MP_PROCESSOR_OPTION=33EV256GM004
-MP_LINKER_FILE_OPTION=,--script=p33EV256GM004.gld
+MP_PROCESSOR_OPTION=33EV256GM104
+MP_LINKER_FILE_OPTION=,--script=p33EV256GM104.gld
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)

@@ -86,7 +86,7 @@ void UART2Init(void) {
     U2MODEbits.PDSEL = 0; // No parity, 8-data bits
     U2MODEbits.ABAUD = 0; // Auto-baud disabled
     U2MODEbits.BRGH = 1; // High speed UART mode...
-    U2BRG = 18; //455 for 9600,227 for 19200, 113 for 38400,  37 for 115200 on BRGH 0, 460800 on BRGH 1, 921600 = 19
+    U2BRG = 18; //455 for 9600,227 for 19200, 113 for 38400,  37 for 115200 on BRGH 0, 460800 on BRGH 1, 921600 = 19 11 for 1500000 baud
     //BRGH = 0, BRG = 18 for 230400, BRG = 17 BRGH = 0 for 25000
     U2STAbits.UTXISEL0 = 0; // int on last character shifted out tx register
     U2STAbits.UTXISEL1 = 0; // int on last character shifted out tx register
@@ -186,7 +186,7 @@ void TimersInit(void) {
     T1CONbits.TGATE = 0;
     T1CONbits.TCKPS = 0b11; // Select 1:256 Prescaler
     TMR1 = 0x00;
-    PR1 = 0x0112; //Approximately 5kHz... 0x0112 For 1kHz  0x0027 for 5kHz
+    PR1 = 0x0027; //Approximately 5kHz... 0x0112 For 1kHz  0x0027 for 5kHz
     IPC0bits.T1IP = 0x01;
     IFS0bits.T1IF = 0;
     IEC0bits.T1IE = 1;

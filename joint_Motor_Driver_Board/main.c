@@ -33,7 +33,7 @@ long int SA_MAX_VEL = 2000;
 long int SF_MAX_VEL = 1000;
 
 CircularBuffer uartBuffer;
-uint8_t uartBuf[200];
+uint8_t uartBuf[30];
 CircularBuffer canBuffer;
 uint8_t canBuf[64];
 CircularBuffer spiBuffer;
@@ -56,6 +56,12 @@ int jj = 1;
 int jjj = 0;
 actuatorCommands commandSet;
 int STATE = 1;
+
+enum {
+    WAITING_MSG_START,
+    MSG_RECIEVING
+};
+int state_msg = WAITING_MSG_START;
 
 enum {
     EVENT_UART_DATA_READY = 0x01,
@@ -132,21 +138,21 @@ int main(void) {
     while (1) {
 
         if (events & EVENT_UPDATE_SPEED) {
-            LED1 = (jj & 0b1);
-            LED2 = (jj & 0b10) >> 1;
-            LED3 = (jj & 0b100) >> 2;
-            jj = ((jj << 1));
-            jj = jj == 0b1000 ? 1 : jj;
 
             iii++;
             /* main control loop*/
             // LED1 = 1;
-            manageEncoders();
-            PositionPD(targetForce);
-            manageMotors(targetForce);
+            //  manageEncoders();
+            // PositionPD(targetForce);
+            //manageMotors(targetForce);
             //   LED1 = 0;
 
-            if (iii % 200 == 0) {
+            if (iii % 500 == 0) {
+                LED1 = (jj & 0b1);
+                LED2 = (jj & 0b10) >> 1;
+                LED3 = (jj & 0b100) >> 2;
+                jj = ((jj << 1));
+                jj = jj == 0b1000 ? 1 : jj;
                 if (iii % 2000 == 0) {
                     STATE = !STATE;
                     MOTOR1 = STATE*PTPER;
@@ -154,40 +160,40 @@ int main(void) {
                 }
                 int pos = 0;
                 int spi_integrity;
-                spi_integrity = checkSPIbus();
-                if (spi_integrity != 0) {
-                    if (spi_error_count >= 3) {
-                        haltAndCatchFire((unsigned int *) "SPI bus failure\r\n");
-                    } else {
-                        spi_error_count++;
+                //                spi_integrity = checkSPIbus();
+                //                if (spi_integrity != 0) {
+                //                    if (spi_error_count >= 3) {
+                //                        haltAndCatchFire((unsigned int *) "SPI bus failure\r\n");
+                //                    } else {
+                //                        spi_error_count++;
+                //
+                //                        size = sprintf((char *) out, "RL: %10ld %10ld SF: %6d %6d  SA: %6d %6d \r\n SPI ERROR %6d \r\n",
+                //                                commandSet.cmd1, commandSet.cmd2,
+                //                                robot_encoders.SF_ENCDR[0][pos], robot_encoders.SF_ENCDR[1][pos],
+                //                                targetForce[0], targetForce[1], spi_integrity);
+                //
+                //                        DMA0_UART2_Transfer(size, out);
+                //                    }
+                //                } else {
+                //                    spi_error_count = 0;
+                //
+                //                    size = sprintf((char *) out, "RL: %10ld %10ld SF: %6d %6d SA: %7ld %7ld Kp: %7ld\r\n",
+                //                            robot_encoders.RL_ENCDR[0][pos], robot_encoders.RL_ENCDR[1][pos],
+                //                            robot_encoders.SF_ENCDR[0][pos], robot_encoders.SF_ENCDR[1][pos],
+                //                            commandSet.cmd1, commandSet.cmd2, commandSet.cmd3);
 
-                        size = sprintf((char *) out, "RL: %10ld %10ld SF: %6d %6d  SA: %6d %6d \r\n SPI ERROR %6d \r\n",
-                                commandSet.cmd1, commandSet.cmd2,
-                                robot_encoders.SF_ENCDR[0][pos], robot_encoders.SF_ENCDR[1][pos],
-                                targetForce[0], targetForce[1], spi_integrity);
+                //                 size = sprintf((char *) out, "RL: %10ld %10ld %10ld %10ld %10ld %10ld  SF: %6d %6d %6d %6d %6d %6d  SA: %6d %6d %6d %6d %6d %6d\r\n",
+                //                        robot_encoders.RL_VEL[0], robot_encoders.RL_VEL[1], robot_encoders.RL_VEL[2], robot_encoders.RL_VEL[3], robot_encoders.RL_VEL[4], robot_encoders.RL_VEL[5],
+                //                        robot_encoders.SF_VEL[0], robot_encoders.SF_VEL[1], robot_encoders.SF_VEL[2], robot_encoders.SF_VEL[3], robot_encoders.SF_VEL[4], robot_encoders.SF_VEL[5],
+                //                        robot_encoders.SA_VEL[0], robot_encoders.SA_VEL[1], robot_encoders.SA_VEL[2], robot_encoders.SA_VEL[3], robot_encoders.SA_VEL[4], robot_encoders.SA_VEL[5]);
 
-                        DMA0_UART2_Transfer(size, out);
-                    }
-                } else {
-                    spi_error_count = 0;
-
-                    size = sprintf((char *) out, "RL: %10ld %10ld SF: %6d %6d SA: %7ld %7ld Kp: %7ld\r\n",
-                            robot_encoders.RL_ENCDR[0][pos], robot_encoders.RL_ENCDR[1][pos],
-                            robot_encoders.SF_ENCDR[0][pos], robot_encoders.SF_ENCDR[1][pos],
-                            commandSet.cmd1, commandSet.cmd2, commandSet.cmd3);
-
-                    //                 size = sprintf((char *) out, "RL: %10ld %10ld %10ld %10ld %10ld %10ld  SF: %6d %6d %6d %6d %6d %6d  SA: %6d %6d %6d %6d %6d %6d\r\n",
-                    //                        robot_encoders.RL_VEL[0], robot_encoders.RL_VEL[1], robot_encoders.RL_VEL[2], robot_encoders.RL_VEL[3], robot_encoders.RL_VEL[4], robot_encoders.RL_VEL[5],
-                    //                        robot_encoders.SF_VEL[0], robot_encoders.SF_VEL[1], robot_encoders.SF_VEL[2], robot_encoders.SF_VEL[3], robot_encoders.SF_VEL[4], robot_encoders.SF_VEL[5],
-                    //                        robot_encoders.SA_VEL[0], robot_encoders.SA_VEL[1], robot_encoders.SA_VEL[2], robot_encoders.SA_VEL[3], robot_encoders.SA_VEL[4], robot_encoders.SA_VEL[5]);
-
-                    //                size = sprintf((char *) out, "1: %5i %5i %5i %5i 2: %5i %5i %5i %5i 3: %5i %5i %5i %5i \r\n",
-                    //                        SW1_1, SW2_1, SW3_1, SW4_1,
-                    //                        SW1_2, SW2_2, SW3_2, SW4_2,
-                    //                        S_SF6, SW2_3, SW3_3, SW4_3);
-
-                    DMA0_UART2_Transfer(size, out);
-                }
+                //                size = sprintf((char *) out, "1: %5i %5i %5i %5i 2: %5i %5i %5i %5i 3: %5i %5i %5i %5i \r\n",
+                //                        SW1_1, SW2_1, SW3_1, SW4_1,
+                //                        SW1_2, SW2_2, SW3_2, SW4_2,
+                //                        S_SF6, SW2_3, SW3_3, SW4_3);
+                //
+                //                    DMA0_UART2_Transfer(size, out);
+                //                }
 
             }
             events &= ~EVENT_UPDATE_SPEED;
@@ -220,17 +226,30 @@ int main(void) {
         if (events & EVENT_UPDATE_LENGTHS) {
             events &= ~EVENT_UPDATE_LENGTHS;
         }
-        if (uartBuffer.dataSize) {
-            uint8_t data;
-            CB_ReadByte(&uartBuffer, &data);
-            //            putsUART2(&data);
-            //            size = sprintf(out, "%c", data);
-            //            DMA0_UART2_Transfer(size, out);         
+        if (state_msg == WAITING_MSG_START) {
 
-            if (DecodeStream(data)) {
-                events |= EVENT_UPDATE_LENGTHS;
+            if (uartBuffer.dataSize) {
+                uint8_t data[1];
+                CB_ReadByte(&uartBuffer, &data);
+                //                DMA0_UART2_Transfer(1, data);
+                if (data[0] == '$') {
+                    state_msg = MSG_RECIEVING;
+                }
+            }//$12345678$01234567
+        } else {
+            if (uartBuffer.dataSize >= 9) {
+                uint8_t data2[10];
+                CB_ReadMany(&uartBuffer, &data2, 9);
+                data2[9] = 10; //carriage return
+                //            putsUART2(&data);
+                //size = sprintf(out, "%c", data);
+                DMA0_UART2_Transfer(10, data2);
+                CB_Remove(&uartBuffer, 30);
+                state_msg = WAITING_MSG_START;
             }
-
+            //            if (DecodeStream(data)) {
+            //                events |= EVENT_UPDATE_LENGTHS;
+            //            }$12345678901234567
         }
     }
 }
@@ -277,41 +296,41 @@ void manageEncoders() {
         }
     }
 
-        selectCS(RL1);
-        readEncLong(&EncCtsLong);
-        selectCS(ALL_CS_HIGH);
-        robot_encoders.RL_ENCDR[0][0] = -EncCtsLong.cts1 + (STRING_OFFSET_0 - STRING_ZERO_LENGTH);
-    
-        selectCS(RL2);
-        readEncLong(&EncCtsLong);
-        selectCS(ALL_CS_HIGH);
-        robot_encoders.RL_ENCDR[1][0] = EncCtsLong.cts1 + (STRING_OFFSET_1 - STRING_ZERO_LENGTH);
-    
-        selectCS(SF1);
-        readEnc(&EncCts);
-        selectCS(ALL_CS_HIGH);
-        robot_encoders.SF_ENCDR[0][0] = robot_encoders.SF_ENCDR[0][0] / 2 - EncCts.cts1;
-    
-        selectCS(SF2);
-        readEnc(&EncCts);
-        selectCS(ALL_CS_HIGH);
-        robot_encoders.SF_ENCDR[1][0] = robot_encoders.SF_ENCDR[1][0] / 2 + EncCts.cts1;
-    
-        selectCS(SA1);
-        readEnc(&EncCts);
-        selectCS(ALL_CS_HIGH);
-        robot_encoders.SA_ENCDR[0][0] = EncCts.cts1;
-    
-        selectCS(SA2);
-        readEnc(&EncCts);
-        selectCS(ALL_CS_HIGH);
-        robot_encoders.SA_ENCDR[1][0] = -EncCts.cts1;
+    selectCS(RL1);
+    readEncLong(&EncCtsLong);
+    selectCS(ALL_CS_HIGH);
+    robot_encoders.RL_ENCDR[0][0] = -EncCtsLong.cts1 + (STRING_OFFSET_0 - STRING_ZERO_LENGTH);
+
+    selectCS(RL2);
+    readEncLong(&EncCtsLong);
+    selectCS(ALL_CS_HIGH);
+    robot_encoders.RL_ENCDR[1][0] = EncCtsLong.cts1 + (STRING_OFFSET_1 - STRING_ZERO_LENGTH);
+
+    selectCS(SF1);
+    readEnc(&EncCts);
+    selectCS(ALL_CS_HIGH);
+    robot_encoders.SF_ENCDR[0][0] = robot_encoders.SF_ENCDR[0][0] / 2 - EncCts.cts1;
+
+    selectCS(SF2);
+    readEnc(&EncCts);
+    selectCS(ALL_CS_HIGH);
+    robot_encoders.SF_ENCDR[1][0] = robot_encoders.SF_ENCDR[1][0] / 2 + EncCts.cts1;
+
+    selectCS(SA1);
+    readEnc(&EncCts);
+    selectCS(ALL_CS_HIGH);
+    robot_encoders.SA_ENCDR[0][0] = EncCts.cts1;
+
+    selectCS(SA2);
+    readEnc(&EncCts);
+    selectCS(ALL_CS_HIGH);
+    robot_encoders.SA_ENCDR[1][0] = -EncCts.cts1;
 
     //    for (i = 0; i < 6; i++) {
     //        robot_encoders.SA_ENCDR[i][0] = robot_encoders.SA_ENCDR[i][0]*(1 - robot_switches.SA[i]);
     //        robot_encoders.SF_ENCDR[i][0] = robot_encoders.SF_ENCDR[i][0]*(1 - robot_switches.SF[i]);
     //    }
-    int h = 250; 
+    int h = 250;
     for (i = 0; i < 2; i++) {
         robot_encoders.RL_VEL[i] = (1 * robot_encoders.RL_VEL[i]) / 2 + (3 * robot_encoders.RL_ENCDR[i][0] - 4 * robot_encoders.RL_ENCDR[i][1] + robot_encoders.RL_ENCDR[i][2]) * h;
         robot_encoders.SF_VEL[i] = (1 * robot_encoders.SF_VEL[i]) / 2 + (3 * robot_encoders.SF_ENCDR[i][0] - 4 * robot_encoders.SF_ENCDR[i][1] + robot_encoders.SF_ENCDR[i][2]) * h;
