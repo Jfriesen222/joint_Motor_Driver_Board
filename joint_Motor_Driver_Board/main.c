@@ -142,7 +142,7 @@ int main(void) {
             iii++;
             /* main control loop*/
             // LED1 = 1;
-            //  manageEncoders();
+            manageEncoders();
             // PositionPD(targetForce);
             //manageMotors(targetForce);
             //   LED1 = 0;
@@ -194,17 +194,17 @@ int main(void) {
                 //                            robot_encoders.SF_ENCDR[0][pos], robot_encoders.SF_ENCDR[1][pos],
                 //                            commandSet.cmd1, commandSet.cmd2, commandSet.cmd3);
 
-                //                 size = sprintf((char *) out, "RL: %10ld %10ld %10ld %10ld %10ld %10ld  SF: %6d %6d %6d %6d %6d %6d  SA: %6d %6d %6d %6d %6d %6d\r\n",
-                //                        robot_encoders.RL_VEL[0], robot_encoders.RL_VEL[1], robot_encoders.RL_VEL[2], robot_encoders.RL_VEL[3], robot_encoders.RL_VEL[4], robot_encoders.RL_VEL[5],
-                //                        robot_encoders.SF_VEL[0], robot_encoders.SF_VEL[1], robot_encoders.SF_VEL[2], robot_encoders.SF_VEL[3], robot_encoders.SF_VEL[4], robot_encoders.SF_VEL[5],
-                //                        robot_encoders.SA_VEL[0], robot_encoders.SA_VEL[1], robot_encoders.SA_VEL[2], robot_encoders.SA_VEL[3], robot_encoders.SA_VEL[4], robot_encoders.SA_VEL[5]);
+                                 size = sprintf((char *) out, "RL: %10ld %10ld %10ld %10ld %10ld %10ld  SF: %6d %6d %6d %6d %6d %6d  SA: %6d %6d %6d %6d %6d %6d\r\n",
+                                        robot_encoders.RL_VEL[0], robot_encoders.RL_VEL[1],
+                                        robot_encoders.SF_VEL[0], robot_encoders.SF_VEL[1],
+                                        robot_encoders.SA_VEL[0], robot_encoders.SA_VEL[1]);
 
-                //                size = sprintf((char *) out, "1: %5i %5i %5i %5i 2: %5i %5i %5i %5i 3: %5i %5i %5i %5i \r\n",
-                //                        SW1_1, SW2_1, SW3_1, SW4_1,
-                //                        SW1_2, SW2_2, SW3_2, SW4_2,
-                //                        S_SF6, SW2_3, SW3_3, SW4_3);
-                //
-                //                    DMA0_UART2_Transfer(size, out);
+//                                size = sprintf((char *) out, "1: %5i %5i %5i %5i 2: %5i %5i %5i %5i 3: %5i %5i %5i %5i \r\n",
+//                                        SW1_1, SW2_1, SW3_1, SW4_1,
+//                                        SW1_2, SW2_2, SW3_2, SW4_2,
+//                                        S_SF6, SW2_3, SW3_3, SW4_3);
+                
+                                    DMA0_UART2_Transfer(size, out);
                 //                }
 
             }
