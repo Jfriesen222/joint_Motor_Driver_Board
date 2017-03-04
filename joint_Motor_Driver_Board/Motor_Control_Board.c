@@ -65,8 +65,9 @@ void MotorInit() {
     /* Set Dead Time Values */
     DTR1 = DTR2 = DTR3 =  0;
     ALTDTR1 = ALTDTR2 = ALTDTR3 = 0;
-    /* Set PWM Mode to Complementary */
-     IOCON1 = IOCON2 = IOCON3 =  0xC000;; //independent >0xCC00;
+    /* Set PWM Mode to Redundant */
+     //independent >0xCC00; complementary = 0xC000; Redundant = 0xC400 
+    IOCON1 = IOCON2 = IOCON3 =  0xC400; 
     /* Set Primary Time Base, Edge-Aligned Mode and Independent Duty Cycles */
     PWMCON2 = PWMCON3 =  0x0000;
     /* Configure Faults */
@@ -290,8 +291,21 @@ void readSwitches(Robot_Switches *robot_switches) {
 
 void setMotors(int *duty_cycle) {
     //duty cycle is -1000 to 1000 
-//    MOTOR1 = (duty_cycle[1] + abs(duty_cycle[1])) / 2;
-//    MOTOR2 = (duty_cycle[2] + abs(duty_cycle[2])) / 2;
+    if(duty_cycle[1] > 0){
+        IOCON1 = 0x8400;
+    }
+    if(duty_cycle[1] < 0) {
+        IOCON1 = 0x4400; 
+    }
+    
+    if(duty_cycle[2] > 0){
+        IOCON2 = 0x8400;
+    }
+    if(duty_cycle[2] < 0){
+        IOCON2 = 0x4400;
+    }
+    MOTOR1 = abs(duty_cycle[1]);
+    MOTOR2 = abs(duty_cycle[2]);
 }
 
 void haltAndCatchFire(unsigned int *message) {

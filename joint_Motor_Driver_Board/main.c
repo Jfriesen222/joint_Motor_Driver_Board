@@ -56,7 +56,7 @@ int jj = 1;
 int jjj = 0;
 actuatorCommands commandSet;
 int STATE = 1;
-
+int motorduty[2];
 enum {
     WAITING_MSG_START,
     MSG_RECIEVING
@@ -153,10 +153,22 @@ int main(void) {
                 LED3 = (jj & 0b100) >> 2;
                 jj = ((jj << 1));
                 jj = jj == 0b1000 ? 1 : jj;
-                if (iii % 2000 == 0) {
-                    STATE = !STATE;
-                    MOTOR1 = STATE*PTPER;
-                    MOTOR2 = STATE*PTPER;
+                if (iii % 2000 == 0) { //after 2000 counts, switches motor direction
+                    STATE = !STATE; //Changes to state from 0 to 1 or 1 to 0
+                    
+                    if (STATE == 1) {
+                        motorduty[1] = -1000;
+                        motorduty[2] = -1000;
+                        
+                    }
+                    else {
+                        motorduty[1] = 1000; //(CCW)Sets motor high to gpio pin 
+                        motorduty[2] = 1000;
+                    }   
+                    
+                    setMotors(motorduty);
+                    //MOTOR1 = STATE*PTPER; //sets duty state* pwm period on primary time base
+                    //MOTOR2 = STATE*PTPER;
                 }
                 int pos = 0;
                 int spi_integrity;

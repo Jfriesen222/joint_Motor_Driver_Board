@@ -3,7 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Documents/GitHub/joint_Motor_Driver_Board/joint_Motor_Driver_Board/main.c</file>
+            <file>file:/home/jerrying/joint_Motor_Driver_Board/joint_Motor_Driver_Board/main.c</file>
+            <file>file:/home/jerrying/joint_Motor_Driver_Board/joint_Motor_Driver_Board/Motor_Control_Board.c</file>
+            <file>file:/home/jerrying/joint_Motor_Driver_Board/joint_Motor_Driver_Board/Motor_Control_Board.h</file>
         </group>
     </open-files>
 </project-private>
