@@ -94,10 +94,6 @@
 
 
 
-typedef struct {
-    int data1;
-} tripSPIdata;
-
 void config_spi_slow();
 void setQuadX4();
 void set2ByteMode();
@@ -106,8 +102,8 @@ void writeDTRtoZeros();
 void setCNTRtoDTR();
 void readEncLong(int long *EncVals);
 void readEnc(int *EncVals);
-void readCountMode(tripSPIdata *count_mode);
-void read_SPI(int command, tripSPIdata *datas);
+void readCountMode(int *count_mode);
+void read_SPI(int command, int *datas);
 void write_SPI(int command);
 
 

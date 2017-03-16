@@ -68,13 +68,13 @@
 #define ODC_CS6               ODCAbits.ODCA1
 #define ODC_CS7               ODCCbits.ODCC7
 
-#define SF1                     0b1111111111111110
-#define SF2                     0b1111111111111101
-#define SA1                     0b1111111111111011
-#define SA2                     0b1111111111110111
-#define RL1                     0b1111111111101111
-#define RL2                     0b1111111111011111
-#define MD                      0b1111111110111111
+#define RL1                     0b11111110
+#define RL2                     0b11111101
+#define SA1                     0b11111011
+#define SF1                     0b11110111
+#define SA2                     0b11101111
+#define SF2                     0b11011111
+#define MD                      0b10111111
 
 #define ALL_CS_LOW              0x0
 #define ALL_CS_HIGH             0xFF
@@ -112,8 +112,8 @@ typedef struct{
 } Robot_Switches; 
 
 
-void InitBoard(ADCBuffer *ADBuff, CircularBuffer *cB, CircularBuffer *spi_cB, void *eventCallback);
-void selectCS(uint16_t cs_bits);
+void InitBoard(CircularBuffer *cB, void *eventCallback);
+void selectCS(uint8_t cs_bits);
 void readSwitches(Robot_Switches *robot_switches);
 int checkSPIbus();
 void haltAndCatchFire(unsigned int *message);

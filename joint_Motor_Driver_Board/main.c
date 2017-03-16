@@ -33,7 +33,7 @@ long int SA_MAX_VEL = 2000;
 long int SF_MAX_VEL = 1000;
 
 CircularBuffer uartBuffer;
-uint8_t uartBuf[30];
+uint8_t uartBuf[64];
 CircularBuffer canBuffer;
 uint8_t canBuf[64];
 CircularBuffer spiBuffer;
@@ -41,7 +41,7 @@ uint16_t spiBuf[64];
 
 int EncCts;
 int long EncCtsLong;
-tripSPIdata RegData;
+int RegData;
 
 Robot_Encoders robot_encoders;
 Robot_Switches robot_switches;
@@ -50,8 +50,7 @@ int spi_error_count = 0;
 
 uint16_t events;
 bool controller;
-ADCBuffer ADCBuff;
-long int iii = 0;
+uint32_t iii = 0;
 int jj = 1;
 int jjj = 0;
 actuatorCommands commandSet;
@@ -66,11 +65,8 @@ int state_msg = WAITING_MSG_START;
 
 enum {
     EVENT_UART_DATA_READY = 0x01,
-    EVENT_CAN_RX = 0x02,
-    EVENT_SPI_RX = 0x04,
     EVENT_REPORT_FAULT = 0x08,
     EVENT_UPDATE_SPEED = 0x10,
-    EVENT_ADC_DATA = 0x20,
     EVENT_UPDATE_LENGTHS = 0x40
 };
 
@@ -83,25 +79,46 @@ long int targetPosition[6];
 int main(void) {
     commandSet.cmd1 = 0;
     commandSet.cmd2 = 0;
-    commandSet.cmd3 = 0;
-    commandSet.cmd4 = 0;
-    commandSet.cmd5 = 0;
-    commandSet.cmd6 = 0;
-    commandSet.cmd7 = 350;
+    commandSet.cmd3 = 350;
+
     static uint8_t out[500];
     static uint8_t size;
-    int targetForce[6];
-    CB_Init(&uartBuffer, uartBuf, 32);
-    CB_Init(&spiBuffer, (uint8_t *) spiBuf, 128);
-    InitBoard(&ADCBuff, &uartBuffer, &spiBuffer, EventChecker);
+    int targetForce[2];
+    CB_Init(&uartBuffer, uartBuf, 64);
+    InitBoard(&uartBuffer, EventChecker);
 
     targetPosition[0] = commandSet.cmd1;
     targetPosition[1] = commandSet.cmd2;
 
     config_spi_slow();
+    int delay;
+    for (delay = 0; delay < 100; delay++);
+
     selectCS(ALL_CS_LOW);
     setQuadX4();
     selectCS(ALL_CS_HIGH);
+
+    for (delay = 0; delay < 100; delay++);
+
+    selectCS(SF1 & SF2 & SA1 & SA2);
+    set2ByteMode();
+    selectCS(ALL_CS_HIGH);
+    for (delay = 0; delay < 100; delay++);
+
+    selectCS(RL1 & RL2);
+    writeDTRtoZerosLong();
+    selectCS(ALL_CS_HIGH);
+    for (delay = 0; delay < 100; delay++);
+
+    selectCS(SF1 & SF2 & SA1 & SA2);
+    writeDTRtoZeros();
+    selectCS(ALL_CS_HIGH);
+    for (delay = 0; delay < 100; delay++);
+
+    selectCS(ALL_CS_LOW);
+    setCNTRtoDTR();
+    selectCS(ALL_CS_HIGH);
+    for (delay = 0; delay < 100; delay++);
 
 
     /* Set encoder counters to the quadrature mode */
@@ -140,10 +157,11 @@ int main(void) {
 
     putsUART2((unsigned int *) "Init. Complete\r\n");
     InitDecoder(&commandSet);
+
+
     while (1) {
-
+        ;
         if (events & EVENT_UPDATE_SPEED) {
-
             iii++;
             /* main control loop*/
             // LED1 = 1;
@@ -151,31 +169,30 @@ int main(void) {
             // PositionPD(targetForce);
             //manageMotors(targetForce);
             //   LED1 = 0;
-
-            if (iii % 500 == 0) {
+            if (iii % 100 == 0) {
                 LED1 = (jj & 0b1);
                 LED2 = (jj & 0b10) >> 1;
                 LED3 = (jj & 0b100) >> 2;
                 jj = ((jj << 1));
-                jj = jj == 0b1000 ? 1 : jj;
-                if (iii % 2000 == 0) { //after 2000 counts, switches motor direction
-                    STATE = !STATE; //Changes to state from 0 to 1 or 1 to 0
-
-                    if (STATE == 1) {
-                        motorduty[1] = -1000;
-                        motorduty[2] = -1000;
-
-                    } else {
-                        motorduty[1] = 1000; //(CCW)Sets motor high to gpio pin 
-                        motorduty[2] = 1000;
-                    }
-
-                    setMotors(motorduty);
-                    //MOTOR1 = STATE*PTPER; //sets duty state* pwm period on primary time base
-                    //MOTOR2 = STATE*PTPER;
-                }
-                int pos = 0;
-                int spi_integrity;
+                jj = (jj == 0b1000) ? 1 : jj;
+                                if (iii % 2000 == 0) { //after 2000 counts, switches motor direction
+                                    STATE = !STATE; //Changes to state from 0 to 1 or 1 to 0
+                
+                                    if (STATE == 1) {
+                                        motorduty[0] = -1000;
+                                        motorduty[1] = -1000;
+                
+                                    } else {
+                                        motorduty[0] = 1000; //(CCW)Sets motor high to gpio pin 
+                                        motorduty[1] = 1000;
+                                    }
+                
+                                    setMotors(motorduty);
+                                    //MOTOR1 = STATE*PTPER; //sets duty state* pwm period on primary time base
+                                    //MOTOR2 = STATE*PTPER;
+                                }
+                //                int pos = 0;
+                //                int spi_integrity;
                 //                spi_integrity = checkSPIbus();
                 //                if (spi_integrity != 0) {
                 //                    if (spi_error_count >= 3) {
@@ -193,16 +210,16 @@ int main(void) {
                 //                } else {
                 //                    spi_error_count = 0;
                 //
-                //                    size = sprintf((char *) out, "RL: %10ld %10ld SF: %6d %6d SA: %7ld %7ld Kp: %7ld\r\n",
-                //                            robot_encoders.RL_ENCDR[0][pos], robot_encoders.RL_ENCDR[1][pos],
-                //                            robot_encoders.SF_ENCDR[0][pos], robot_encoders.SF_ENCDR[1][pos],
-                //                            commandSet.cmd1, commandSet.cmd2, commandSet.cmd3);
-
-                size = sprintf((char *) out, "RL: %10ld %10ld SF: %6d %6d SA: %6d %6d\r\n",
-                        robot_encoders.RL_VEL[0], robot_encoders.RL_VEL[1],
-                        robot_encoders.SF_VEL[0], robot_encoders.SF_VEL[1],
-                        robot_encoders.SA_VEL[0], robot_encoders.SA_VEL[1]);
-
+                size = sprintf((char *) out, "Step# %10lu RL: %10ld %10ld SF: %6d %6d SA: %6d %6d \r\n", iii,
+                        robot_encoders.RL_ENCDR[0][0], robot_encoders.RL_ENCDR[1][0],
+                        robot_encoders.SF_ENCDR[0][0], robot_encoders.SF_ENCDR[1][0],
+                        robot_encoders.SA_ENCDR[0][0], robot_encoders.SA_ENCDR[1][0]);
+                //
+                //                size = sprintf((char *) out, "RL: %10ld %10ld SF: %6d %6d SA: %6d %6d\r\n",
+                //                        robot_encoders.RL_VEL[0], robot_encoders.RL_VEL[1],
+                //                        robot_encoders.SF_VEL[0], robot_encoders.SF_VEL[1],
+                //                        robot_encoders.SA_VEL[0], robot_encoders.SA_VEL[1]);
+                // size = sprintf((char *) out, "%lu \r\n",iii);
                 //                                size = sprintf((char *) out, "1: %5i %5i %5i %5i 2: %5i %5i %5i %5i 3: %5i %5i %5i %5i \r\n",
                 //                                        SW1_1, SW2_1, SW3_1, SW4_1,
                 //                                        SW1_2, SW2_2, SW3_2, SW4_2,
@@ -210,7 +227,6 @@ int main(void) {
 
                 DMA0_UART2_Transfer(size, out);
                 //                }
-
             }
             events &= ~EVENT_UPDATE_SPEED;
         }
@@ -220,28 +236,14 @@ int main(void) {
             events &= ~EVENT_UART_DATA_READY;
         }
 
-        if (events & EVENT_CAN_RX) {
-            events &= ~EVENT_CAN_RX;
-        }
-
-        if (events & EVENT_SPI_RX) {
-
-            events &= ~EVENT_SPI_RX;
-        }
-
         if (events & EVENT_REPORT_FAULT) {
             events &= ~EVENT_REPORT_FAULT;
-        }
-
-        if (events & EVENT_ADC_DATA) {
-
-
-            events &= ~EVENT_ADC_DATA;
         }
 
         if (events & EVENT_UPDATE_LENGTHS) {
             events &= ~EVENT_UPDATE_LENGTHS;
         }
+
         if (state_msg == WAITING_MSG_START) {
 
             if (uartBuffer.dataSize) {
@@ -271,20 +273,6 @@ int main(void) {
 }
 
 void EventChecker(void) {
-
-
-    if (canBuffer.dataSize) {
-        events |= EVENT_CAN_RX;
-    }
-
-    if (spiBuffer.dataSize) {
-        events |= EVENT_SPI_RX;
-    }
-
-    if (ADCBuff.newData) {
-        ADCBuff.newData = 0;
-        events |= EVENT_ADC_DATA;
-    }
     events |= EVENT_UPDATE_SPEED;
 }
 
@@ -304,7 +292,7 @@ void manageEncoders() {
     //    setCNTRtoDTR();
     //    selectCS(ALL_CS_HIGH, ALL_CS_HIGH);
     int i, j;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < 2; i++) {
         for (j = 1; j>-1; j--) {
             robot_encoders.RL_ENCDR[i][j + 1] = robot_encoders.RL_ENCDR[i][j];
             robot_encoders.SF_ENCDR[i][j + 1] = robot_encoders.SF_ENCDR[i][j];
@@ -342,10 +330,10 @@ void manageEncoders() {
     selectCS(ALL_CS_HIGH);
     robot_encoders.SA_ENCDR[1][0] = -EncCts;
 
-    //    for (i = 0; i < 6; i++) {
-    //        robot_encoders.SA_ENCDR[i][0] = robot_encoders.SA_ENCDR[i][0]*(1 - robot_switches.SA[i]);
-    //        robot_encoders.SF_ENCDR[i][0] = robot_encoders.SF_ENCDR[i][0]*(1 - robot_switches.SF[i]);
-    //    }
+    for (i = 0; i < 2; i++) {
+        robot_encoders.SA_ENCDR[i][0] = robot_encoders.SA_ENCDR[i][0]*(1 - robot_switches.SA[i]);
+        robot_encoders.SF_ENCDR[i][0] = robot_encoders.SF_ENCDR[i][0]*(1 - robot_switches.SF[i]);
+    }
     int h = 250;
     for (i = 0; i < 2; i++) {
         robot_encoders.RL_VEL[i] = (1 * robot_encoders.RL_VEL[i]) / 2 + (3 * robot_encoders.RL_ENCDR[i][0] - 4 * robot_encoders.RL_ENCDR[i][1] + robot_encoders.RL_ENCDR[i][2]) * h;
@@ -358,7 +346,7 @@ void manageMotors(int *targetForce) {
     int motorCommands[6];
     int jj = 0;
 
-    for (jj = 0; jj < 6; jj++) {
+    for (jj = 0; jj < 2; jj++) {
         motorCommands[jj] = ((robot_encoders.RL_ENCDR[jj][0] > MAX_RL) ? (-300) : (FORCE_Kp * (robot_encoders.SF_ENCDR[jj][0] - targetForce[jj])));
     }
     setMotors(motorCommands);
@@ -367,14 +355,10 @@ void manageMotors(int *targetForce) {
 void PositionPD(int *targetForce) {
     targetPosition[0] = commandSet.cmd1;
     targetPosition[1] = commandSet.cmd2;
-    targetPosition[2] = commandSet.cmd3;
-    targetPosition[3] = commandSet.cmd4;
-    targetPosition[4] = commandSet.cmd5;
-    targetPosition[5] = commandSet.cmd6;
-    POS_Kp = commandSet.cmd7;
+    POS_Kp = commandSet.cmd3;
 
     int jj = 0;
-    for (jj = 0; jj < 6; jj++) {
+    for (jj = 0; jj < 2; jj++) {
         targetForce[jj] = (robot_encoders.RL_ENCDR[jj][0] - targetPosition[jj]) / POS_Kp; // + robot_encoders.RL_VEL[jj] / POS_Kd;
         targetForce[jj] = ((targetForce[jj] < MIN_FORCE) ? MIN_FORCE : (targetForce[jj] > MAX_FORCE) ? MAX_FORCE : targetForce[jj]);
     }
@@ -383,4 +367,3 @@ void PositionPD(int *targetForce) {
 void __attribute__((__interrupt__, no_auto_psv)) _CNInterrupt(void) {
     IFS1bits.CNIF = 0; // Clear CN interrupt
 }
-

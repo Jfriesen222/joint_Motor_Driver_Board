@@ -37,7 +37,7 @@
 #include <stdint.h>
 
 typedef struct {
-    uint8_t sentence[200];
+    uint8_t sentence[50];
     uint8_t checksum;
 } NMEA_0183_Sentence;
 
@@ -45,10 +45,6 @@ typedef struct {
     long int cmd1;
     long int cmd2;
     long int cmd3;
-    long int cmd4;
-    long int cmd5;
-    long int cmd6;
-    long int cmd7;
 } Commands;
 
 typedef Commands actuatorCommands;

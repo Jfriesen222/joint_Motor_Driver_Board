@@ -19,7 +19,7 @@ endif
 endif
 
 # Environment
-MKDIR=mkdir -p
+MKDIR=gnumkdir -p
 RM=rm -f 
 MV=mv 
 CP=cp 
@@ -51,17 +51,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main.c DMA_Transfer.c CircularBuffer.c Nmea0183.c NMEAProtocol.c Conversions.c LS7366R_SPI.c Motor_Control_Board.c
+SOURCEFILES_QUOTED_IF_SPACED=main.c DMA_Transfer.c CircularBuffer.c Nmea0183.c NMEAProtocol.c Conversions.c LS7366R_SPI.c Motor_Control_Board.c ../../../../Downloads/ce427_ecan_crosswire/ce427_ecan_crosswire/firmware/src/traps.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/DMA_Transfer.o ${OBJECTDIR}/CircularBuffer.o ${OBJECTDIR}/Nmea0183.o ${OBJECTDIR}/NMEAProtocol.o ${OBJECTDIR}/Conversions.o ${OBJECTDIR}/LS7366R_SPI.o ${OBJECTDIR}/Motor_Control_Board.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/DMA_Transfer.o.d ${OBJECTDIR}/CircularBuffer.o.d ${OBJECTDIR}/Nmea0183.o.d ${OBJECTDIR}/NMEAProtocol.o.d ${OBJECTDIR}/Conversions.o.d ${OBJECTDIR}/LS7366R_SPI.o.d ${OBJECTDIR}/Motor_Control_Board.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/DMA_Transfer.o ${OBJECTDIR}/CircularBuffer.o ${OBJECTDIR}/Nmea0183.o ${OBJECTDIR}/NMEAProtocol.o ${OBJECTDIR}/Conversions.o ${OBJECTDIR}/LS7366R_SPI.o ${OBJECTDIR}/Motor_Control_Board.o ${OBJECTDIR}/_ext/379080108/traps.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/DMA_Transfer.o.d ${OBJECTDIR}/CircularBuffer.o.d ${OBJECTDIR}/Nmea0183.o.d ${OBJECTDIR}/NMEAProtocol.o.d ${OBJECTDIR}/Conversions.o.d ${OBJECTDIR}/LS7366R_SPI.o.d ${OBJECTDIR}/Motor_Control_Board.o.d ${OBJECTDIR}/_ext/379080108/traps.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/DMA_Transfer.o ${OBJECTDIR}/CircularBuffer.o ${OBJECTDIR}/Nmea0183.o ${OBJECTDIR}/NMEAProtocol.o ${OBJECTDIR}/Conversions.o ${OBJECTDIR}/LS7366R_SPI.o ${OBJECTDIR}/Motor_Control_Board.o
+OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/DMA_Transfer.o ${OBJECTDIR}/CircularBuffer.o ${OBJECTDIR}/Nmea0183.o ${OBJECTDIR}/NMEAProtocol.o ${OBJECTDIR}/Conversions.o ${OBJECTDIR}/LS7366R_SPI.o ${OBJECTDIR}/Motor_Control_Board.o ${OBJECTDIR}/_ext/379080108/traps.o
 
 # Source Files
-SOURCEFILES=main.c DMA_Transfer.c CircularBuffer.c Nmea0183.c NMEAProtocol.c Conversions.c LS7366R_SPI.c Motor_Control_Board.c
+SOURCEFILES=main.c DMA_Transfer.c CircularBuffer.c Nmea0183.c NMEAProtocol.c Conversions.c LS7366R_SPI.c Motor_Control_Board.c ../../../../Downloads/ce427_ecan_crosswire/ce427_ecan_crosswire/firmware/src/traps.c
 
 
 CFLAGS=
@@ -144,6 +144,13 @@ ${OBJECTDIR}/Motor_Control_Board.o: Motor_Control_Board.c  nbproject/Makefile-${
 	${MP_CC} $(MP_EXTRA_CC_PRE)  Motor_Control_Board.c  -o ${OBJECTDIR}/Motor_Control_Board.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Motor_Control_Board.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/Motor_Control_Board.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
+${OBJECTDIR}/_ext/379080108/traps.o: ../../../../Downloads/ce427_ecan_crosswire/ce427_ecan_crosswire/firmware/src/traps.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/379080108" 
+	@${RM} ${OBJECTDIR}/_ext/379080108/traps.o.d 
+	@${RM} ${OBJECTDIR}/_ext/379080108/traps.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../../../../Downloads/ce427_ecan_crosswire/ce427_ecan_crosswire/firmware/src/traps.c  -o ${OBJECTDIR}/_ext/379080108/traps.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/379080108/traps.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off  
+	@${FIXDEPS} "${OBJECTDIR}/_ext/379080108/traps.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 else
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -201,6 +208,13 @@ ${OBJECTDIR}/Motor_Control_Board.o: Motor_Control_Board.c  nbproject/Makefile-${
 	${MP_CC} $(MP_EXTRA_CC_PRE)  Motor_Control_Board.c  -o ${OBJECTDIR}/Motor_Control_Board.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Motor_Control_Board.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off  
 	@${FIXDEPS} "${OBJECTDIR}/Motor_Control_Board.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
+${OBJECTDIR}/_ext/379080108/traps.o: ../../../../Downloads/ce427_ecan_crosswire/ce427_ecan_crosswire/firmware/src/traps.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/379080108" 
+	@${RM} ${OBJECTDIR}/_ext/379080108/traps.o.d 
+	@${RM} ${OBJECTDIR}/_ext/379080108/traps.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../../../../Downloads/ce427_ecan_crosswire/ce427_ecan_crosswire/firmware/src/traps.c  -o ${OBJECTDIR}/_ext/379080108/traps.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/379080108/traps.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off  
+	@${FIXDEPS} "${OBJECTDIR}/_ext/379080108/traps.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 endif
 
 # ------------------------------------------------------------------------------------
@@ -220,13 +234,13 @@ endif
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 dist/${CND_CONF}/${IMAGE_TYPE}/joint_Motor_Driver_Board.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_CC} $(MP_EXTRA_LD_PRE)  -o dist/${CND_CONF}/${IMAGE_TYPE}/joint_Motor_Driver_Board.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}      -mcpu=$(MP_PROCESSOR_OPTION)        -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -omf=elf -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)   -mreserve=data@0x1000:0x101B -mreserve=data@0x101C:0x101D -mreserve=data@0x101E:0x101F -mreserve=data@0x1020:0x1021 -mreserve=data@0x1022:0x1023 -mreserve=data@0x1024:0x1027 -mreserve=data@0x1028:0x104F   -Wl,--local-stack,,--defsym=__MPLAB_BUILD=1,--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,--defsym=__MPLAB_DEBUGGER_PK3=1,$(MP_LINKER_FILE_OPTION),--stack=16,--check-sections,--data-init,--pack-data,--handles,--isr,--no-gc-sections,--fill-upper=0,--stackguard=16,--no-force-link,--smart-io,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--report-mem,--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml$(MP_EXTRA_LD_POST) 
+	${MP_CC} $(MP_EXTRA_LD_PRE)  -o dist/${CND_CONF}/${IMAGE_TYPE}/joint_Motor_Driver_Board.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}      -mcpu=$(MP_PROCESSOR_OPTION)        -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -omf=elf -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)   -mreserve=data@0x1000:0x101B -mreserve=data@0x101C:0x101D -mreserve=data@0x101E:0x101F -mreserve=data@0x1020:0x1021 -mreserve=data@0x1022:0x1023 -mreserve=data@0x1024:0x1027 -mreserve=data@0x1028:0x104F   -Wl,--local-stack,--defsym=__MPLAB_BUILD=1,--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,--defsym=__MPLAB_DEBUGGER_PK3=1,$(MP_LINKER_FILE_OPTION),--stack=16,--check-sections,--data-init,--pack-data,--handles,--isr,--no-gc-sections,--fill-upper=0,--stackguard=16,--no-force-link,--smart-io,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--report-mem,--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml$(MP_EXTRA_LD_POST) 
 	
 else
 dist/${CND_CONF}/${IMAGE_TYPE}/joint_Motor_Driver_Board.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_CC} $(MP_EXTRA_LD_PRE)  -o dist/${CND_CONF}/${IMAGE_TYPE}/joint_Motor_Driver_Board.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}      -mcpu=$(MP_PROCESSOR_OPTION)        -omf=elf -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -Wl,--local-stack,,--defsym=__MPLAB_BUILD=1,$(MP_LINKER_FILE_OPTION),--stack=16,--check-sections,--data-init,--pack-data,--handles,--isr,--no-gc-sections,--fill-upper=0,--stackguard=16,--no-force-link,--smart-io,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--report-mem,--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml$(MP_EXTRA_LD_POST) 
-	${MP_CC_DIR}/xc16-bin2hex dist/${CND_CONF}/${IMAGE_TYPE}/joint_Motor_Driver_Board.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} -a  -omf=elf  
+	${MP_CC} $(MP_EXTRA_LD_PRE)  -o dist/${CND_CONF}/${IMAGE_TYPE}/joint_Motor_Driver_Board.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}      -mcpu=$(MP_PROCESSOR_OPTION)        -omf=elf -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)  -Wl,--local-stack,--defsym=__MPLAB_BUILD=1,$(MP_LINKER_FILE_OPTION),--stack=16,--check-sections,--data-init,--pack-data,--handles,--isr,--no-gc-sections,--fill-upper=0,--stackguard=16,--no-force-link,--smart-io,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--report-mem,--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml$(MP_EXTRA_LD_POST) 
+	${MP_CC_DIR}\\xc16-bin2hex dist/${CND_CONF}/${IMAGE_TYPE}/joint_Motor_Driver_Board.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} -a  -omf=elf  
 	
 endif
 
@@ -246,7 +260,7 @@ endif
 # Enable dependency checking
 .dep.inc: .depcheck-impl
 
-DEPFILES=$(shell "${PATH_TO_IDE_BIN}"mplabwildcard ${POSSIBLE_DEPFILES})
+DEPFILES=$(shell mplabwildcard ${POSSIBLE_DEPFILES})
 ifneq (${DEPFILES},)
 include ${DEPFILES}
 endif

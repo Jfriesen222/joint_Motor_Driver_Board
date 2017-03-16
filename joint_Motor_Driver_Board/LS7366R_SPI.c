@@ -15,10 +15,7 @@
 #include <dma.h>
 #include <xc.h>
 
-tripSPIdata cntData1;
-tripSPIdata cntData2;
-tripSPIdata cntData3;
-tripSPIdata cntData4;
+
 
 unsigned int config1slow = ENABLE_SCK_PIN & // Internal Serial Clock is Enabled
         ENABLE_SDO_PIN & // SDO2 pin is controlled by the module
@@ -72,8 +69,6 @@ void set2ByteMode() {
     write_SPI(0x02); // Configure to 4 byte mode
 }
 
-
-
 void writeDTRtoZerosLong() {
     write_SPI(WRITE_DTR);
     // Load data
@@ -90,7 +85,6 @@ void writeDTRtoZeros() {
     write_SPI(0x00);
 }
 
-
 void setCNTRtoDTR() {
     write_SPI(LOAD_CNTR);
 }
@@ -98,6 +92,9 @@ void setCNTRtoDTR() {
 void readEncLong(int long *EncVals) {
     // Initialize temporary variables for SPI read
     write_SPI(READ_CNTR); // Request count
+
+    int cntData1, cntData2, cntData3, cntData4;
+
     read_SPI(0x00, &cntData1); // Read highest order byte
     read_SPI(0x00, &cntData2);
     read_SPI(0x00, &cntData3);
@@ -105,39 +102,39 @@ void readEncLong(int long *EncVals) {
 
     // Calculate encoder count
     long int count_value;
-    count_value = (cntData1.data1 << 8) + cntData2.data1;
-    count_value = (count_value << 8) + cntData3.data1;
-    count_value = (count_value << 8) + cntData4.data1;
+    count_value = (cntData1 << 8) + cntData2;
+    count_value = (count_value << 8) + cntData3;
+    count_value = (count_value << 8) + cntData4;
     *EncVals = count_value;
 }
 
 void readEnc(int *EncVals) {
     // Initialize temporary variables for SPI read
+    int cntData1, cntData2;
     write_SPI(READ_CNTR); // Request count
     read_SPI(0x00, &cntData1); // Read highest order byte
     read_SPI(0x00, &cntData2);
 
     // Calculate encoder count
     int count_value;
-    count_value = (cntData1.data1 << 8) + cntData2.data1;
+    count_value = (cntData1 << 8) + cntData2;
     *EncVals = count_value;
 }
 
-void readCountMode(tripSPIdata *count_mode){
+void readCountMode(int *count_mode) {
+    int cntData1;
     write_SPI(READ_MDR0);
     read_SPI(0x00, &cntData1);
-    
-    count_mode->data1 = cntData1.data1;
-    
+    *count_mode = cntData1;
 }
 
-void read_SPI(int command, tripSPIdata *datas) {
+void read_SPI(int command, int *datas) {
     int bufVal;
     bufVal = SPI2BUF; // dummy read of the SPI1BUF register to clear the SPIRBF flag
     SPI2BUF = command; // write the data out to the SPI peripheral
     while (!SPI2STATbits.SPIRBF); // wait for the data to be sent out
     bufVal = SPI2BUF;
-    datas->data1 = SPI2BUF;
+    *datas = SPI2BUF;
 }
 
 void write_SPI(int command) {
