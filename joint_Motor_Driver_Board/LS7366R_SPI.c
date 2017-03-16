@@ -47,6 +47,7 @@ unsigned int config3 = SPI_ENABLE & // Enable module
 void config_spi_slow() {
     CloseSPI2();
     OpenSPI2(config1slow, config2, config3);
+    //SPI2CON2 = SPI2CON2 | 0b0000000000000001;
 }
 
 void setQuadX4() {
@@ -94,7 +95,7 @@ void setCNTRtoDTR() {
     write_SPI(LOAD_CNTR);
 }
 
-void readEncLong(EncoderCtsLong *EncVals) {
+void readEncLong(int long *EncVals) {
     // Initialize temporary variables for SPI read
     write_SPI(READ_CNTR); // Request count
     read_SPI(0x00, &cntData1); // Read highest order byte
@@ -107,10 +108,10 @@ void readEncLong(EncoderCtsLong *EncVals) {
     count_value = (cntData1.data1 << 8) + cntData2.data1;
     count_value = (count_value << 8) + cntData3.data1;
     count_value = (count_value << 8) + cntData4.data1;
-    EncVals->cts1 = count_value;
+    *EncVals = count_value;
 }
 
-void readEnc(EncoderCts *EncVals) {
+void readEnc(int *EncVals) {
     // Initialize temporary variables for SPI read
     write_SPI(READ_CNTR); // Request count
     read_SPI(0x00, &cntData1); // Read highest order byte
@@ -119,7 +120,7 @@ void readEnc(EncoderCts *EncVals) {
     // Calculate encoder count
     int count_value;
     count_value = (cntData1.data1 << 8) + cntData2.data1;
-    EncVals->cts1 = count_value;
+    *EncVals = count_value;
 }
 
 void readCountMode(tripSPIdata *count_mode){
@@ -134,7 +135,8 @@ void read_SPI(int command, tripSPIdata *datas) {
     int bufVal;
     bufVal = SPI2BUF; // dummy read of the SPI1BUF register to clear the SPIRBF flag
     SPI2BUF = command; // write the data out to the SPI peripheral
-    while ((!SPI2STATbits.SPIRBF) ); // wait for the data to be sent out
+    while (!SPI2STATbits.SPIRBF); // wait for the data to be sent out
+    bufVal = SPI2BUF;
     datas->data1 = SPI2BUF;
 }
 
@@ -142,6 +144,6 @@ void write_SPI(int command) {
     int bufVal;
     bufVal = SPI2BUF; // dummy read of the SPI1BUF register to clear the SPIRBF flag
     SPI2BUF = command; // write the data out to the SPI peripheral
-    while ((!SPI2STATbits.SPIRBF)  ); // wait for the data to be sent out
+    while (!SPI2STATbits.SPIRBF); // wait for the data to be sent out
     bufVal = SPI2BUF; // dummy read of the SPI1BUF register to clear the SPIRBF flag
 }

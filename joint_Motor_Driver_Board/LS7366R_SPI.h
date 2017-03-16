@@ -93,13 +93,6 @@
  */
 
 
-typedef struct {
-    long int cts1;
-} EncoderCtsLong;
-
-typedef struct {
-    int cts1;
-} EncoderCts;
 
 typedef struct {
     int data1;
@@ -111,8 +104,8 @@ void set2ByteMode();
 void writeDTRtoZerosLong();
 void writeDTRtoZeros();
 void setCNTRtoDTR();
-void readEncLong(EncoderCtsLong *EncVals);
-void readEnc(EncoderCts *EncVals);
+void readEncLong(int long *EncVals);
+void readEnc(int *EncVals);
 void readCountMode(tripSPIdata *count_mode);
 void read_SPI(int command, tripSPIdata *datas);
 void write_SPI(int command);

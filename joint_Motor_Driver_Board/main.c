@@ -39,8 +39,8 @@ uint8_t canBuf[64];
 CircularBuffer spiBuffer;
 uint16_t spiBuf[64];
 
-EncoderCts EncCts;
-EncoderCtsLong EncCtsLong;
+int EncCts;
+int long EncCtsLong;
 tripSPIdata RegData;
 
 Robot_Encoders robot_encoders;
@@ -57,6 +57,7 @@ int jjj = 0;
 actuatorCommands commandSet;
 int STATE = 1;
 int motorduty[2];
+
 enum {
     WAITING_MSG_START,
     MSG_RECIEVING
@@ -98,6 +99,10 @@ int main(void) {
     targetPosition[1] = commandSet.cmd2;
 
     config_spi_slow();
+    selectCS(ALL_CS_LOW);
+    setQuadX4();
+    selectCS(ALL_CS_HIGH);
+
 
     /* Set encoder counters to the quadrature mode */
 #ifdef RECALIBRATION
@@ -155,17 +160,16 @@ int main(void) {
                 jj = jj == 0b1000 ? 1 : jj;
                 if (iii % 2000 == 0) { //after 2000 counts, switches motor direction
                     STATE = !STATE; //Changes to state from 0 to 1 or 1 to 0
-                    
+
                     if (STATE == 1) {
                         motorduty[1] = -1000;
                         motorduty[2] = -1000;
-                        
-                    }
-                    else {
+
+                    } else {
                         motorduty[1] = 1000; //(CCW)Sets motor high to gpio pin 
                         motorduty[2] = 1000;
-                    }   
-                    
+                    }
+
                     setMotors(motorduty);
                     //MOTOR1 = STATE*PTPER; //sets duty state* pwm period on primary time base
                     //MOTOR2 = STATE*PTPER;
@@ -194,17 +198,17 @@ int main(void) {
                 //                            robot_encoders.SF_ENCDR[0][pos], robot_encoders.SF_ENCDR[1][pos],
                 //                            commandSet.cmd1, commandSet.cmd2, commandSet.cmd3);
 
-                                 size = sprintf((char *) out, "RL: %10ld %10ld %10ld %10ld %10ld %10ld  SF: %6d %6d %6d %6d %6d %6d  SA: %6d %6d %6d %6d %6d %6d\r\n",
-                                        robot_encoders.RL_VEL[0], robot_encoders.RL_VEL[1],
-                                        robot_encoders.SF_VEL[0], robot_encoders.SF_VEL[1],
-                                        robot_encoders.SA_VEL[0], robot_encoders.SA_VEL[1]);
+                size = sprintf((char *) out, "RL: %10ld %10ld SF: %6d %6d SA: %6d %6d\r\n",
+                        robot_encoders.RL_VEL[0], robot_encoders.RL_VEL[1],
+                        robot_encoders.SF_VEL[0], robot_encoders.SF_VEL[1],
+                        robot_encoders.SA_VEL[0], robot_encoders.SA_VEL[1]);
 
-//                                size = sprintf((char *) out, "1: %5i %5i %5i %5i 2: %5i %5i %5i %5i 3: %5i %5i %5i %5i \r\n",
-//                                        SW1_1, SW2_1, SW3_1, SW4_1,
-//                                        SW1_2, SW2_2, SW3_2, SW4_2,
-//                                        S_SF6, SW2_3, SW3_3, SW4_3);
-                
-                                    DMA0_UART2_Transfer(size, out);
+                //                                size = sprintf((char *) out, "1: %5i %5i %5i %5i 2: %5i %5i %5i %5i 3: %5i %5i %5i %5i \r\n",
+                //                                        SW1_1, SW2_1, SW3_1, SW4_1,
+                //                                        SW1_2, SW2_2, SW3_2, SW4_2,
+                //                                        S_SF6, SW2_3, SW3_3, SW4_3);
+
+                DMA0_UART2_Transfer(size, out);
                 //                }
 
             }
@@ -287,7 +291,7 @@ void EventChecker(void) {
 /* Reads encoders, resets them when switches are pressed, and calculates velocities*/
 void manageEncoders() {
     uint16_t switchCS_1 = 0, switchCS_2 = 0;
-    readSwitches(&robot_switches);
+    //readSwitches(&robot_switches);
 
     //    switchCS_2 = (robot_switches.SA[0] * ~SA1_2) | (robot_switches.SF[0] * ~SF1_2);
     //    switchCS_1 = (robot_switches.SA[1] * ~SA2_1) | (robot_switches.SF[1] * ~SF2_1)
@@ -311,32 +315,32 @@ void manageEncoders() {
     selectCS(RL1);
     readEncLong(&EncCtsLong);
     selectCS(ALL_CS_HIGH);
-    robot_encoders.RL_ENCDR[0][0] = -EncCtsLong.cts1 + (STRING_OFFSET_0 - STRING_ZERO_LENGTH);
+    robot_encoders.RL_ENCDR[0][0] = -EncCtsLong + (STRING_OFFSET_0 - STRING_ZERO_LENGTH);
 
     selectCS(RL2);
     readEncLong(&EncCtsLong);
     selectCS(ALL_CS_HIGH);
-    robot_encoders.RL_ENCDR[1][0] = EncCtsLong.cts1 + (STRING_OFFSET_1 - STRING_ZERO_LENGTH);
+    robot_encoders.RL_ENCDR[1][0] = EncCtsLong + (STRING_OFFSET_1 - STRING_ZERO_LENGTH);
 
     selectCS(SF1);
     readEnc(&EncCts);
     selectCS(ALL_CS_HIGH);
-    robot_encoders.SF_ENCDR[0][0] = robot_encoders.SF_ENCDR[0][0] / 2 - EncCts.cts1;
+    robot_encoders.SF_ENCDR[0][0] = robot_encoders.SF_ENCDR[0][0] / 2 - EncCts;
 
     selectCS(SF2);
     readEnc(&EncCts);
     selectCS(ALL_CS_HIGH);
-    robot_encoders.SF_ENCDR[1][0] = robot_encoders.SF_ENCDR[1][0] / 2 + EncCts.cts1;
+    robot_encoders.SF_ENCDR[1][0] = robot_encoders.SF_ENCDR[1][0] / 2 + EncCts;
 
     selectCS(SA1);
     readEnc(&EncCts);
     selectCS(ALL_CS_HIGH);
-    robot_encoders.SA_ENCDR[0][0] = EncCts.cts1;
+    robot_encoders.SA_ENCDR[0][0] = EncCts;
 
     selectCS(SA2);
     readEnc(&EncCts);
     selectCS(ALL_CS_HIGH);
-    robot_encoders.SA_ENCDR[1][0] = -EncCts.cts1;
+    robot_encoders.SA_ENCDR[1][0] = -EncCts;
 
     //    for (i = 0; i < 6; i++) {
     //        robot_encoders.SA_ENCDR[i][0] = robot_encoders.SA_ENCDR[i][0]*(1 - robot_switches.SA[i]);

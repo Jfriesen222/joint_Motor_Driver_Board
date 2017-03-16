@@ -67,7 +67,8 @@ void MotorInit() {
     ALTDTR1 = ALTDTR2 = ALTDTR3 = 0;
     /* Set PWM Mode to Redundant */
      //independent >0xCC00; complementary = 0xC000; Redundant = 0xC400 
-    IOCON1 = IOCON2 = IOCON3 =  0xC400; 
+    IOCON1 = 0;
+    IOCON2 = IOCON3 =  0xC400; 
     /* Set Primary Time Base, Edge-Aligned Mode and Independent Duty Cycles */
     PWMCON2 = PWMCON3 =  0x0000;
     /* Configure Faults */
@@ -86,8 +87,8 @@ void UART2Init(void) {
     U2MODEbits.STSEL = 0; // 1-stop bit
     U2MODEbits.PDSEL = 0; // No parity, 8-data bits
     U2MODEbits.ABAUD = 0; // Auto-baud disabled
-    U2MODEbits.BRGH = 1; // High speed UART mode...
-    U2BRG = 18; //455 for 9600,227 for 19200, 113 for 38400,  37 for 115200 on BRGH 0, 460800 on BRGH 1, 921600 = 19 11 for 1500000 baud
+    U2MODEbits.BRGH = 0; // High speed UART mode...
+    U2BRG = 37; //455 for 9600,227 for 19200, 113 for 38400,  37 for 115200 on BRGH 0, 460800 on BRGH 1, 921600 = 19 11 for 1500000 baud
     //BRGH = 0, BRG = 18 for 230400, BRG = 17 BRGH = 0 for 25000
     U2STAbits.UTXISEL0 = 0; // int on last character shifted out tx register
     U2STAbits.UTXISEL1 = 0; // int on last character shifted out tx register
@@ -97,6 +98,7 @@ void UART2Init(void) {
     
     PPSOut(_U2TX, _RP40); // Connect UART2 TX output to RP40 pin
     PPSIn(_U2RX, _RP39); // Connect UART2 RX output to RP39 pin
+    PPSIn(_SCK2, _RP41); // Set SCK remapped to input as well
 }
 
 void ClockInit(void) {
@@ -120,6 +122,8 @@ void PinInit(void) {
 
     I2C1CON1 = 0;
     I2C1CON2 = 0;
+    
+    CM5CON = 0;
 
     //Right now no analog peripherals are being used, so we let digital
     //peripherals take over.
@@ -291,13 +295,6 @@ void readSwitches(Robot_Switches *robot_switches) {
 
 void setMotors(int *duty_cycle) {
     //duty cycle is -1000 to 1000 
-    if(duty_cycle[1] > 0){
-        IOCON1 = 0x8400;
-    }
-    if(duty_cycle[1] < 0) {
-        IOCON1 = 0x4400; 
-    }
-    
     if(duty_cycle[2] > 0){
         IOCON2 = 0x8400;
     }
@@ -311,7 +308,8 @@ void setMotors(int *duty_cycle) {
 void haltAndCatchFire(unsigned int *message) {
     putsUART2(message);
     PTPER = 500;
-    IOCON1 = IOCON2 = IOCON3 = 0xC000;
+    IOCON1 = 0;
+    IOCON2 = IOCON3 = 0xC000;
     MOTOR1 = PTPER / 2;
     MOTOR2 = PTPER / 2;
     while (1);
