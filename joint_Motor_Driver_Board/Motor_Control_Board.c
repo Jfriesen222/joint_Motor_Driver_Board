@@ -84,7 +84,7 @@ void UART2Init(void) {
     U2MODEbits.STSEL = 0; // 1-stop bit
     U2MODEbits.PDSEL = 0; // No parity, 8-data bits
     U2MODEbits.ABAUD = 0; // Auto-baud disabled
-    U2MODEbits.BRGH = 0; // High speed UART mode...
+    U2MODEbits.BRGH = 1; // High speed UART mode...
     U2BRG = 37; //455 for 9600,227 for 19200, 113 for 38400,  37 for 115200 on BRGH 0, 460800 on BRGH 1, 921600 = 19 11 for 1500000 baud
     //BRGH = 0, BRG = 18 for 230400, BRG = 17 BRGH = 0 for 25000
     U2STAbits.UTXISEL0 = 0; // int on last character shifted out tx register
