@@ -98,15 +98,6 @@
 
 
 typedef struct{
-    long int RL_ENCDR[2][3];
-    int SF_ENCDR[2][3];
-    int SA_ENCDR[2][3];
-    long int RL_VEL[2];
-    int SF_VEL[2];
-    int SA_VEL[2];
-} Robot_Encoders; 
-
-typedef struct{
     uint8_t SF[2];
     uint8_t SA[2];
 } Robot_Switches; 

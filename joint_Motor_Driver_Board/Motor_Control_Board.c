@@ -58,7 +58,7 @@ void InitBoard(CircularBuffer *cB, void *eventCallback) {
 void MotorInit() {
 
     /* Set PWM Period on Primary Time Base */
-    PTPER = 1000;
+    PTPER = 2000;
     /* Set Duty Cycles */
 
     /* Set Dead Time Values */
@@ -85,7 +85,7 @@ void UART2Init(void) {
     U2MODEbits.PDSEL = 0; // No parity, 8-data bits
     U2MODEbits.ABAUD = 0; // Auto-baud disabled
     U2MODEbits.BRGH = 1; // High speed UART mode...
-    U2BRG = 37; //455 for 9600,227 for 19200, 113 for 38400,  37 for 115200 on BRGH 0, 460800 on BRGH 1, 921600 = 19 11 for 1500000 baud
+    U2BRG = 18; //455 for 9600,227 for 19200, 113 for 38400,  37 for 115200 on BRGH 0, 460800 on BRGH 1, 921600 = 18 11 for 1500000 baud
     //BRGH = 0, BRG = 18 for 230400, BRG = 17 BRGH = 0 for 25000
     U2STAbits.UTXISEL0 = 0; // int on last character shifted out tx register
     U2STAbits.UTXISEL1 = 0; // int on last character shifted out tx register
@@ -162,7 +162,7 @@ void PinInit(void) {
     TRIS_CS1 = TRIS_CS2 = TRIS_CS3 = TRIS_CS4 = TRIS_CS5 = TRIS_CS6 = TRIS_CS7 = 0;
     ODC_CS1 = ODC_CS2 = ODC_CS3 = ODC_CS4 = ODC_CS5 = ODC_CS6 = ODC_CS7 = 0;
     CS1 = CS2 = CS3 = CS4 = CS5 = CS6 =  1;
-    CS7 = 0;
+    CS7 = 1;
 
     /* initialize switch pins as inputs */
     TRIS_SW1 = 1;
@@ -238,10 +238,10 @@ void selectCS(uint8_t cs_bits) {
 }
 
 void readSwitches(Robot_Switches *robot_switches) {
-//    robot_switches->SF[0] = S_SF1;
-//    robot_switches->SF[1] = S_SF2;
-//    robot_switches->SA[0] = S_SA1;
-//    robot_switches->SA[1] = S_SA2;
+    robot_switches->SF[0] = SW1;
+    robot_switches->SF[1] = SW3;
+    robot_switches->SA[0] = SW2;
+    robot_switches->SA[1] = SW4;
 }
 
 void setMotors(int *duty_cycle) {
@@ -253,17 +253,17 @@ void setMotors(int *duty_cycle) {
         IOCON2 = 0x4400;
     }
     if(duty_cycle[1] > 0){
-        IOCON3 = 0x8400;
+        IOCON3 = 0x4400;
     }
     if(duty_cycle[1] < 0){
-        IOCON3 = 0x4400;
+        IOCON3 = 0x8400;
     }
     MOTOR1 = abs(duty_cycle[0]);
     MOTOR2 = abs(duty_cycle[1]);
 }
 
 void haltAndCatchFire(unsigned int *message) {
-    putsUART2(message);
+    //putsUART2(message);
     PTPER = 500;
     IOCON1 = 0;
     IOCON2 = IOCON3 = 0xC000;

@@ -37,7 +37,7 @@
 #include <stdint.h>
 
 typedef struct {
-    uint8_t sentence[50];
+    uint8_t sentence[64];
     uint8_t checksum;
 } NMEA_0183_Sentence;
 
@@ -47,7 +47,19 @@ typedef struct {
     long int cmd3;
 } Commands;
 
+
+
+typedef struct{
+    long int RL_ENCDR[2][3];
+    int SF_ENCDR[2][3];
+    int SA_ENCDR[2][3];
+    long int RL_VEL[2];
+    int SF_VEL[2];
+    int SA_VEL[2];
+} Robot_Encoders; 
+
 typedef Commands actuatorCommands;
+
 
 
 void InitDecoder(Commands *out);
@@ -64,7 +76,8 @@ uint8_t DecodeStream(uint8_t newChar);
  * @param data Takes a StringData type.
  * @return NULL if there are any errors.  Pointer to sentence otherwise.
  */
-uint8_t *BuildSentence(actuatorCommands data);
+void BuildSentence(uint8_t *sentence, Robot_Encoders *encoders);
+void DecodeSentence(uint8_t *data);
 
 #endif	/* PROTOCOL_H */
 
