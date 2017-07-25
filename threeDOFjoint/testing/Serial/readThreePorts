@@ -1,0 +1,34 @@
+#include <math.h>
+#include <matrix.h>
+#include <mex.h>
+#include <stdint.h>
+#include "c_serial.h"
+static c_serial_port_t* m_port;
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    if(nrhs!=1) {
+        mexErrMsgIdAndTxt("MyToolbox:arrayProduct:nrhs","Please send serial port object.");
+    }
+    if(nlhs!=1) {
+        mexErrMsgIdAndTxt("MyToolbox:arrayProduct:nlhs","Serial data output required.");
+    }
+    int status;
+    uint8_t data[37];
+    int data_length;
+    double *msgData;               /* output  vector */
+
+    
+    m_port = reinterpret_cast<c_serial_port_t*>(*((uint64_t *)mxGetData(prhs[0])));
+    int iii;
+    
+    data_length = 37;
+    status = c_serial_read_data( m_port, data, &data_length,  NULL);
+    if( status < 0 ){
+        mexPrintf( "Read Failed\n");
+    }
+    /* create the output matrix */
+    plhs[0] = mxCreateDoubleMatrix(1,(mwSize)data_length,mxREAL);
+    msgData = mxGetPr(plhs[0]);
+    for (int j = 0; j < data_length; j++)
+			msgData[j] = (double) data[j];    
+}
