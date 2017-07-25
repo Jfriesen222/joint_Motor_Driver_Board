@@ -154,7 +154,7 @@ jointUpdate(joint, jointCommandPlot,jointDynamicsPlot,pStruct,s);
 %updating
 %Create a timer to update everything, 20 fps should
 %look smooth prob best not to go below this
-for i = 1:100000
+for i = 1:10000
     timerUpdate(calls,@jointUpdate)
 end
 for i = 1:3
